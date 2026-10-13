@@ -42,7 +42,7 @@ window.addEventListener("unhandledrejection",function(e){window.__d("PROMISE ERR
 
 </script>
 
-<header><h1>Pollinations</h1><span class="pill" id="auth">מחובר אוטומטית (sunraz2)</span><span class="pill" id="bal">יתרה: נטענת…</span><span class="pill" id="guestStat">אורח: לא נבדק</span><button id="guestBtn" style="background:#2b5d3b;color:#fff;border:1px solid #3d8a52;border-radius:10px;padding:6px 14px;font-size:13px;cursor:pointer">🔄 חידוש התארחות</button></header>
+<header><h1>Pollinations</h1><span class="pill" id="auth">מחובר אוטומטית (sunraz2)</span><span class="pill" id="bal">יתרה: נטענת…</span><span class="pill" id="guestStat">אורח: לא נבדק</span><button id="guestBtn" style="background:#2b5d3b;color:#fff;border:1px solid #3d8a52;border-radius:10px;padding:6px 14px;font-size:13px;cursor:pointer">🔄 חידוש התארחות</button><div style="position:relative"><button id="userBtn" style="background:#2b2b3d;color:#d8d8e8;border:1px solid #4a4a66;border-radius:10px;padding:6px 14px;font-size:13px;cursor:pointer">👤 משתמש: סאן</button><div id="userMenu" style="display:none;position:absolute;top:110%;right:0;background:#141824;border:1px solid #232a3d;border-radius:10px;min-width:190px;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div></div></header>
 <main>
 
 <div class="card" id="gpuCard"><h2>מחברות GPU (קולאב + קגל)</h2>
@@ -189,9 +189,9 @@ async function persistGuest(blobUrl,prompt,w,hh,seed){
   const bl=await (await fetch(blobUrl)).blob();const b64=await blobToB64(bl);
   const up=await (await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"upload",data_base64:b64,mime:bl.type||"image/jpeg"})})).json();
   const stable=up.url||blobUrl;
-  await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_result",kind:"image",url:stable,prompt:prompt,parameters:{tier:"guest",model:"sana",seed:seed,width:w,height:hh}})});
+  await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_result",user:USER.display_name,kind:"image",url:stable,prompt:prompt,parameters:{tier:"guest",model:"sana",seed:seed,width:w,height:hh}})});
   const o=$("out");const a=o.querySelectorAll("a.act");if(up.url&&a.length){a[0].href=up.url;a[1].href=up.url}
- }catch(e){try{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_result",kind:"image",url:blobUrl,prompt:prompt,parameters:{tier:"guest",model:"sana"}})})}catch(e2){}}
+ }catch(e){try{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_result",user:USER.display_name,kind:"image",url:blobUrl,prompt:prompt,parameters:{tier:"guest",model:"sana"}})})}catch(e2){}}
 }
 $("go").onclick=async()=>{const b=$("go");b.disabled=true;const o=$("out");const P=compose();
  try{
@@ -211,13 +211,13 @@ $("go").onclick=async()=>{const b=$("go");b.disabled=true;const o=$("out");const
    if(ok){b.disabled=false;return}
    // נפילה: אורח דרך השרת
    o.textContent="אורח במכשיר מוגבל, מנסה דרך השרת…";
-   const j=await (await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"generate",kind:"image",prompt:P,width:+$("w").value,height:+$("h").value,seed:+$("seed").value})})).json();
+   const j=await (await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"generate",user:USER.display_name,kind:"image",prompt:P,width:+$("w").value,height:+$("h").value,seed:+$("seed").value})})).json();
    if(j.url){showResult(j.url,false);b.disabled=false;return}
    o.textContent="שגיאה: "+(j.error||"אורח מוגבל גם בשרת. לחץ על חידוש התארחות ונסה שוב בעוד דקה. היתרה שלך לא נגעה.");
   }else{
    // וידאו או img2img — דרך הפרוקסי
    o.textContent="יוצר… (יכול לקחת עד דקה)";
-   const body={action:"generate",kind:kind.value,model:model.value,prompt:P,width:+$("w").value,height:+$("h").value,seed:+$("seed").value,image:$("ref").value.trim()||undefined};
+   const body={action:"generate",user:USER.display_name,kind:kind.value,model:model.value,prompt:P,width:+$("w").value,height:+$("h").value,seed:+$("seed").value,image:$("ref").value.trim()||undefined};
    if(kind.value==="video"){body.duration=+$("dur").value;delete body.width;delete body.height}
    const j=await (await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})).json();
    if(j.url){showResult(j.url,kind.value==="video")}
@@ -321,4 +321,26 @@ $("guestBtn").addEventListener("click",function(){
   }).catch(function(e){btn.disabled=false;btn.textContent="🔄 חידוש התארחות";st.textContent="אורח: שגיאת חיבור";st.style.color="#ff8a8a"});
 });
 
+/* === בחירת משתמש רשום (13/10, בקשת סאן) — כרגע: סאן/שימי פיתוח; בעתיד: כל הסוכנים === */
+var USER={username:"sun",display_name:"סאן"};
+try{var su=localStorage.getItem("studioUser");if(su)USER=JSON.parse(su)}catch(e){}
+function setUser(u){USER=u;try{localStorage.setItem("studioUser",JSON.stringify(u))}catch(e){};$("userBtn").textContent="👤 "+u.display_name;$("userMenu").style.display="none"}
+$("userBtn").onclick=function(ev){ev.stopPropagation();var m=$("userMenu");m.style.display=(m.style.display==="block")?"none":"block"};
+document.addEventListener("click",function(ev){if(!ev.target.closest||!ev.target.closest("#userMenu"))$("userMenu").style.display="none"});
+(function(){
+ fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"users"})})
+  .then(function(r){return r.json()}).then(function(j){
+    $("userBtn").textContent="👤 "+USER.display_name;
+    if(!j.users||!j.users.length)return;
+    var known=j.users.some(function(u){return u.username===USER.username});
+    if(!known)setUser(j.users[0]);
+    var m=$("userMenu");m.innerHTML="";
+    j.users.forEach(function(u){var d=document.createElement("div");
+      d.textContent=u.display_name+(u.role==="owner"?" (בעלים)":"");
+      d.style.cssText="padding:10px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid #232a3d";
+      d.onmouseenter=function(){d.style.background="#222a42"};d.onmouseleave=function(){d.style.background="transparent"};
+      d.onclick=function(ev){ev.stopPropagation();setUser(u)};
+      m.appendChild(d)});
+  }).catch(function(e){$("userBtn").textContent="👤 "+USER.display_name});
+})();
 </script></body></html>
