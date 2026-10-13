@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pollinations | ShimiStudio</title>
+<style>
+.saveBtn{background:#2b2b3d;color:#d8d8e8;border:1px solid #4a4a66;border-radius:8px;padding:4px 10px;font-size:12px;margin-top:4px;cursor:pointer}.saveBtn:hover{background:#3a3a52}
+:root{--bg:#0b0d12;--card:#141824;--line:#232a3d;--ac:#7c5cff;--tx:#e8ecf5;--mut:#8b95b0;--ok:#3ddc97;--err:#ff6b81}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,Segoe UI,Arial}
+header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+h1{margin:0;font-size:19px}.pill{background:var(--card);border:1px solid var(--line);padding:4px 10px;border-radius:99px;font-size:12px;color:var(--mut)}
+main{max-width:1000px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{margin:0 0 10px;font-size:16px}
+label{display:block;color:var(--mut);font-size:12px;margin:8px 0 4px}
+select option{background:#0e1220;color:#e8ecf5}
+select,input,textarea{width:100%;background:#0e1220;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit}
+textarea{min-height:88px;resize:vertical}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+button{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:10px 16px;font:inherit;cursor:pointer;margin-top:10px}
+button.sec{background:#222a42}button:disabled{opacity:.5}
+pre{background:#080a10;border:1px solid var(--line);border-radius:10px;padding:12px;direction:ltr;text-align:left;overflow:auto;white-space:pre-wrap;word-break:break-all;min-height:40px;font-size:13px}
+.out img,.out video{max-width:100%;border-radius:10px;margin-top:8px}
+img.zoom{cursor:zoom-in}
+#lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:99;align-items:center;justify-content:center;cursor:zoom-out;flex-direction:column;padding:10px}
+#lb img,#lb video{max-width:97vw;max-height:88vh;border-radius:6px}
+.act{display:inline-block;margin:8px 8px 0;padding:6px 12px;border-radius:8px;background:#222a42;color:var(--tx);text-decoration:none;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:7px;text-align:right;vertical-align:top}
+td code{direction:ltr;display:inline-block;background:#080a10;padding:2px 6px;border-radius:6px;color:var(--ok);font-size:12px}
+.note{color:var(--mut);font-size:12px}
+#refBox{display:none;margin-top:8px;align-items:center;gap:10px}
+#refBox img{width:74px;height:74px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+#hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:10px}
+#hist .it{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#0e1220;cursor:pointer}
+#hist .it img{width:100%;aspect-ratio:5/3;object-fit:cover;display:block}
+#hist .it .v{width:100%;aspect-ratio:5/3;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--ok)}
+#hist .it .cap{font-size:11px;color:var(--mut);padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr}
+</style></head><body>
+<div id="diag" style="position:sticky;top:0;z-index:99;background:#2a1010;color:#ffb4b4;font:12px monospace;padding:6px 10px;direction:ltr;display:none;white-space:pre-wrap"></div>
+<script>
+window.__log=[];window.__d=function(m){window.__log.push(m);var e=document.getElementById("diag");if(e){e.style.display="block";e.textContent=window.__log.slice(-6).join("\n")}};
+window.onerror=function(msg,src,line,col){window.__d("JS ERR: "+msg+" @"+line+":"+col)};
+window.addEventListener("unhandledrejection",function(e){window.__d("PROMISE ERR: "+(e.reason&&e.reason.message||e.reason))});
+
+</script>
+
+<header><h1>Pollinations</h1><span class="pill" id="auth">מחובר אוטומטית (sunraz2)</span><span class="pill" id="bal">יתרה: נטענת…</span><span class="pill" id="guestStat">אורח: לא נבדק</span><button id="guestBtn" style="background:#2b5d3b;color:#fff;border:1px solid #3d8a52;border-radius:10px;padding:6px 14px;font-size:13px;cursor:pointer">🔄 חידוש התארחות</button></header>
+<main>
+
+<div class="card" id="gpuCard"><h2>מחברות GPU (קולאב + קגל)</h2>
+<p class="note">לחיצה אחת פותחת את שתי המחברות בלשוניות חדשות. הדף הזה נשאר פתוח, אפשר להמשיך ליצור בפוליניישנז בזמן שהן עולות.</p>
+<div class="row">
+<div><label>פרומפט (יועתק אוטומטית ללוח)</label><textarea id="gpuPrompt" dir="ltr" placeholder="הדבק כאן את הפרומפט לוידאו, 81 פריימים"></textarea>
+<button class="saveBtn" data-f="gpuPrompt">💾 שמור פרומפט וידאו</button></div>
+</div>
+<button id="gpuGo" style="background:#2e9e5b;font-size:17px;padding:12px 18px">⚡ הפעל GPU בקגל (אוטומטי)</button>
+<div id="gpuBox" style="display:none;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:10px">
+ <div id="gpuStat" style="font-weight:700"></div>
+ <div style="height:8px;background:#0e1220;border-radius:6px;margin:8px 0;overflow:hidden"><div id="gpuBar" style="height:8px;width:0;background:#7c5cff;transition:width .6s"></div></div>
+ <div id="gpuLog" class="note" style="white-space:pre-wrap"></div>
+ <div id="gpuRes"></div>
+</div>
+<p class="note">הפרומפט נבנה אוטומטית מ-LOCK + ACTION + סצנה + SET. אם מולא URL בשדה "תמונת רפרנס" הווידאו ייווצר ממנה כתמונת עוגן (שומר זהות ומבנה גוף). קגל רץ ברקע ואפשר להישאר בדף. קולאב לא ניתן להפעלה אוטומטית (ראה למטה).</p>
+<button class="sec" id="openBoth">פתח קולאב + קגל ידנית</button>
+<a class="act" id="openColab" target="_blank" rel="noopener" href="https://colab.research.google.com/github/sunraz/ShimiStudio/blob/main/colab/shimi_colab_launcher.ipynb">קולאב בלבד</a>
+<a class="act" id="openKaggle" target="_blank" rel="noopener" href="https://www.kaggle.com/code/bigshimi358/shimi-dev-physics">קגל בלבד</a>
+<ol class="note" style="line-height:1.9"><li>קולאב: Runtime ← Run all, הדבק את הפרומפט בתא 2.</li><li>קגל: Accelerator ← GPU, Internet ← On, Save &amp; Run All.</li><li>אורך נעול: 81 פריימים (5.06 שניות).</li></ol>
+<div id="gpuMsg" class="note"></div></div>
+<div class="card"><h2>יצירה</h2>
+<div class="row">
+<div><label>סוג</label><select id="kind"><option value="image">תמונה (עובד, חינם)</option><option value="video">וידאו (דורש יתרה בתשלום)</option></select></div>
+<div><label>מודל</label><select id="model"><option value="flux">Flux Schnell (מהיר, ברירת מחדל)</option><option value="zimage">Z-Image Turbo (מהיר וזול)</option><option value="klein">Flux Klein 4B</option><option value="kontext">Flux Kontext (עריכה עם רפרנס)</option><option value="dreamshaper">DreamShaper 8</option><option value="gptimage">GPT Image Mini</option><option value="gpt-image-1.5">GPT Image 1.5</option><option value="microsoft/mai-image-2.6-flash">MAI Image Flash</option><option value="community/MarcosFRG/sdxl-lightning">SDXL Lightning</option><option value="community/vendouple/lucid-origin">Lucid Origin</option></select><div class="note" style="margin-top:4px">בתמונות (מצב אורח, חינם) המודל הוא Sana — הבחירה כאן משפיעה רק על וידאו.</div></div>
+<div><label>רוחב</label><input id="w" value="832"></div>
+<div><label>גובה</label><input id="h" value="480"></div>
+<div><label>סיד</label><input id="seed" value="4242"></div>
+<div id="durWrap" style="display:none"><label>משך וידאו (שניות)</label><input id="dur" value="5"></div>
+</div>
+<p id="vidWarn" class="note" style="color:#7fd492">תמונות נוצרות במצב אורח — חינם לגמרי, אף פעם לא מהיתרה שלך. וידאו בלבד עולה פולן מהיתרה. לוידאו חינמי השתמש בכפתורי קולאב/קגל.</p>
+<label>נעילת דמות (LOCK) — מצורפת אוטומטית לפני הפרומפט</label>
+<textarea id="lock" dir="ltr" style="min-height:60px">pale goth woman, pale porcelain skin with freckles, sharp black winged eyeliner, dark plum lipstick, long straight jet-black hair with blunt bangs, very large heavy natural bust, narrow waist, flat stomach, wide hips, soft thick thighs.</textarea>
+<button class="saveBtn" data-f="lock">💾 שמור LOCK</button>
+<label>אווירה (SET) — מצורפת אוטומטית אחרי הפרומפט</label>
+<textarea id="set" dir="ltr" style="min-height:60px">Underground poker room, green felt poker table, warm brass lamp light. Photorealistic, cinematic film grain, realistic skin texture.</textarea>
+<button class="saveBtn" data-f="set">💾 שמור SET</button>
+<label>פעולה (ACTION) — מה הדמות עושה, מצורפת אוטומטית אחרי הנעילה</label><textarea id="action" dir="ltr" style="min-height:60px" placeholder="e.g. She slowly bends forward and presses her hand into her thigh, flesh compresses then springs back"></textarea>
+<button class="saveBtn" data-f="action">💾 שמור ACTION</button>
+<label>סצנה (פרומפט חופשי, אופציונלי)</label><textarea id="prompt" dir="ltr"></textarea>
+<button class="saveBtn" data-f="prompt">💾 שמור פרומפט</button>
+<pre id="full" style="min-height:34px"></pre>
+
+<label>תמונת רפרנס (מהמכשיר או URL)</label>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<input id="ref" dir="ltr" placeholder="https://... (או העלה מהמכשיר)" style="flex:1;min-width:200px">
+<button class="sec" id="upBtn" style="margin:0;padding:10px 14px">📷 העלה מהמכשיר</button>
+</div>
+<input type="file" id="file" accept="image/*" style="display:none">
+<div id="refBox"><img id="refThumb" alt=""><button class="sec" id="refClear" style="margin:0;padding:6px 12px">הסר רפרנס</button><span class="note">הרפרנס יישלח למודלים שתומכים בזה</span></div>
+
+<button id="go">צור</button> <button class="sec" id="cmdOnly">הצג פקודה</button>
+<pre id="cmd"></pre><div class="out" id="out"></div>
+<p class="note">תמונות נוצרות כאורח. וידאו רץ עם המפתח שלנו ששמור בשרת. כל תוצאה נשמרת אוטומטית בהיסטוריה למטה.</p>
+</div>
+
+<div class="card"><h2>היסטוריה (נשמרת אוטומטית אצלנו)</h2>
+<button class="sec" id="hRefresh" style="margin:0;padding:8px 14px">רענן</button>
+<div id="hist"><span class="note">נטענת…</span></div>
+<p class="note">לחיצה על פריט פותחת בגודל מלא. הקבצים שמורים אצלנו במערכת גם אחרי שסוגרים את הדף.</p>
+</div>
+
+<div class="card"><h2>טבלת פקודות (CLI)</h2>
+<table><thead><tr><th>מה</th><th>פקודה</th></tr></thead><tbody id="tbl"></tbody></table>
+<p class="note">לחיצה מעתיקה. הפוקודות המלאות זהות לאלה ששימי פיתוח מריץ.</p></div>
+
+<div class="card"><h2>Claude Code דרך Pollinations</h2>
+<pre>bash polli-claude-code-pack.sh   # התקנה מלאה בפקודה אחת
+polli harness claude-code on      # הפעלה
+polli harness claude-code off     # ביטול</pre></div>
+<div id="lb" onclick="this.style.display='none'"><div id="lbbody"></div><div style="color:var(--mut);margin-top:10px;font-size:13px">לחיצה בכל מקום סוגרת · קליק ימין לשמירה</div></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+var kind=$("kind"),model=$("model");
+const PROXY="https://base44.app/api/apps/6a901f55a4d9a9b76a095a77/functions/polliProxy";
+const CMDS=[
+["התחברות חדשה (רק אם צריך)","polli auth login"],["סטטוס + יתרה","polli whoami"],["יציאה","polli auth logout"],
+["רשימת מודלי תמונה","polli models --type image"],["רשימת מודלי וידאו","polli models --type video"],
+["תמונה","polli gen image \"PROMPT\" --model google/gemini-2.5-flash-image --width 832 --height 480 --seed 4242 --output out.png"],
+["וידאו מטקסט","polli gen video \"PROMPT\" --model alibaba/wan-2.2-fast --duration 5 --output out.mp4"],
+["וידאו מתמונה","polli gen video \"PROMPT\" --model alibaba/wan-2.2-fast --image URL --output out.mp4"],
+["העלאת קובץ ל-URL","polli upload ./file.png"],["יתרת פולן","polli usage"],["היסטוריית שימוש","polli usage --history"],
+["משימות (Quests)","polli quests"],["מפתחות","polli keys list"],["עזרה","polli gen --help"],
+["Claude Code ON","polli harness claude-code on"],["Claude Code OFF","polli harness claude-code off"]];
+const tb=document.getElementById("tbl");
+CMDS.forEach(([a,b])=>{const tr=document.createElement("tr");
+tr.innerHTML=`<td>${a}</td><td><code>${b.replace(/</g,"&lt;")}</code></td>`;
+tr.querySelector("code").onclick=()=>navigator.clipboard.writeText(b);tb.appendChild(tr)});
+const MODELS={image:[
+["flux","Flux Schnell (מהיר, ברירת מחדל)"],
+["zimage","Z-Image Turbo (מהיר וזול)"],
+["klein","Flux Klein 4B"],
+["kontext","Flux Kontext (עריכה עם רפרנס)"],
+["dreamshaper","DreamShaper 8"],
+["gptimage","GPT Image Mini"],
+["gpt-image-1.5","GPT Image 1.5"],
+["microsoft/mai-image-2.6-flash","MAI Image Flash"],
+["community/MarcosFRG/sdxl-lightning","SDXL Lightning"],
+["community/vendouple/lucid-origin","Lucid Origin"]],
+video:[["alibaba/wan-2.2-fast","Wan 2.2 Fast"],["alibaba/wan-2.7","Wan 2.7"],["bytedance/seedance-2.0-fast","Seedance 2.0 Fast"],["google/veo-3.1-fast","Veo 3.1 Fast"]]};
+function fill(){
+ while(model.firstChild)model.removeChild(model.firstChild);
+ MODELS[kind.value].forEach(function(m){var o=document.createElement("option");o.value=m[0];o.textContent=m[1];model.appendChild(o)});
+ model.selectedIndex=0;
+ var isVid=kind.value==="video";
+ $("durWrap").style.display=isVid?"block":"none";
+ $("vidWarn").style.display=isVid?"block":"none";
+}
+kind.onchange=fill;kind.addEventListener("change",fill);fill();
+function compose(){var g=function(i){return $(i).value.trim()};return [g("lock"),g("action"),g("prompt"),g("set")].filter(Boolean).join(" ")}
+function build(){const p=compose().replace(/"/g,'\\"'),m=model.value,s=$("seed").value,d=$("dur").value,r=$("ref").value.trim();
+ if(kind.value==="image")return `polli gen image "${p}" --model ${m} --width ${$("w").value} --height ${("h",$("h").value)} --seed ${s}`+(r?` --image ${r}`:"")+` --output out.png`;
+ return `polli gen video "${p}" --model ${m} --duration ${d}`+(r?` --image ${r}`:"")+` --output out.mp4`}
+$("cmdOnly").onclick=()=>{$("cmd").textContent=build()};
+["lock","action","set","prompt"].forEach(id=>$(id).addEventListener("input",()=>{$("full").textContent="פרומפט מלא: "+compose()}));
+
+/* ---- reference upload from device ---- */
+$("upBtn").onclick=()=>$("file").click();
+$("file").onchange=()=>{const f=$("file").files[0];if(!f)return;
+ const rd=new FileReader();
+ rd.onload=()=>{const b64=rd.result.split(",")[1];
+  $("upBtn").disabled=true;$("upBtn").textContent="מעלה…";
+  fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"upload",data_base64:b64,mime:f.type})})
+  .then(r=>r.json()).then(j=>{if(j.url){$("ref").value=j.url;$("refThumb").src=j.url;$("refBox").style.display="flex"}
+  else alert("העלאה נכשלה: "+(j.error||""));$("upBtn").disabled=false;$("upBtn").textContent="📷 העלה מהמכשיר"});
+ };
+ rd.readAsDataURL(f);};
+$("refClear").onclick=()=>{$("ref").value="";$("file").value="";$("refBox").style.display="none"};
+
+/* ---- generate: images = free guest tier (browser-direct first, proxy fallback). video = key via proxy ---- */
+function guestDirectUrl(prompt,w,hh,seed){const p=new URLSearchParams({nologo:"true"});if(w)p.set("width",String(w));if(hh)p.set("height",String(hh));if(seed)p.set("seed",String(seed));return "https://image.pollinations.ai/prompt/"+encodeURIComponent(prompt)+"?"+p}
+function blobToB64(blob){return new Promise((res,rej)=>{const rd=new FileReader();rd.onload=()=>res(rd.result.split(",")[1]);rd.onerror=rej;rd.readAsDataURL(blob)})}
+function showResult(url,isVideo){const o=$("out");
+ o.innerHTML=(isVideo?'<video src="'+url+'" controls autoplay loop></video>':'<img class="zoom" src="'+url+'">')
+  +'<div><a class="act" href="'+url+'" target="_blank" rel="noopener">פתח בגודל מלא</a><a class="act" href="'+url+'" download>שמור</a></div>'
+  +'<div class="note" style="margin-top:6px">✓ נשמר אוטומטית בהיסטוריה</div><div id="blkWarn"></div>';
+ loadHist();
+ if(!isVideo){var im=o.querySelector("img");if(im){var chk=function(){try{var c=document.createElement("canvas");c.width=32;c.height=32;var x=c.getContext("2d");x.drawImage(im,0,0,32,32);var d=x.getImageData(0,0,32,32).data,mx=0;for(var i=0;i<d.length;i+=4){mx=Math.max(mx,d[i],d[i+1],d[i+2])}
+   if(mx<6)document.getElementById("blkWarn").innerHTML='<div class="note" style="color:#ff8a8a;margin-top:6px">⚠ התמונה שחורה לגמרי: המסנן של המודל חסם את הפרומפט. נסה ניסוח אחר.</div>'}catch(e){}};
+   if(im.complete&&im.naturalWidth>0)chk();else im.onload=chk}}}
+async function persistGuest(blobUrl,prompt,w,hh,seed){
+ try{
+  const bl=await (await fetch(blobUrl)).blob();const b64=await blobToB64(bl);
+  const up=await (await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"upload",data_base64:b64,mime:bl.type||"image/jpeg"})})).json();
+  const stable=up.url||blobUrl;
+  await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_result",kind:"image",url:stable,prompt:prompt,parameters:{tier:"guest",model:"sana",seed:seed,width:w,height:hh}})});
+  const o=$("out");const a=o.querySelectorAll("a.act");if(up.url&&a.length){a[0].href=up.url;a[1].href=up.url}
+ }catch(e){try{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_result",kind:"image",url:blobUrl,prompt:prompt,parameters:{tier:"guest",model:"sana"}})})}catch(e2){}}
+}
+$("go").onclick=async()=>{const b=$("go");b.disabled=true;const o=$("out");const P=compose();
+ try{
+  if(kind.value==="image"&&!$("ref").value.trim()){
+   // מסלול אורח חינם ישירות מהדפדפן (חלון האורח של המכשיר שלך)
+   o.textContent="יוצר כאורח (חינם)…";
+   const gUrl=guestDirectUrl(P,+$("w").value,+$("h").value,+$("seed").value);
+   let ok=false;
+   try{
+    const r=await fetch(gUrl);
+    if(r.ok&&(r.headers.get("content-type")||"").includes("image")){
+      const blob=await r.blob();const u=URL.createObjectURL(blob);ok=true;
+      showResult(u,false);persistGuest(u,P,+$("w").value,+$("h").value,+$("seed").value);
+      const st=$("guestStat");st.textContent="אורח: פעיל ✓";st.style.color="#7fd492";
+    }
+   }catch(e){}
+   if(ok){b.disabled=false;return}
+   // נפילה: אורח דרך השרת
+   o.textContent="אורח במכשיר מוגבל, מנסה דרך השרת…";
+   const j=await (await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"generate",kind:"image",prompt:P,width:+$("w").value,height:+$("h").value,seed:+$("seed").value})})).json();
+   if(j.url){showResult(j.url,false);b.disabled=false;return}
+   o.textContent="שגיאה: "+(j.error||"אורח מוגבל גם בשרת. לחץ על חידוש התארחות ונסה שוב בעוד דקה. היתרה שלך לא נגעה.");
+  }else{
+   // וידאו או img2img — דרך הפרוקסי
+   o.textContent="יוצר… (יכול לקחת עד דקה)";
+   const body={action:"generate",kind:kind.value,model:model.value,prompt:P,width:+$("w").value,height:+$("h").value,seed:+$("seed").value,image:$("ref").value.trim()||undefined};
+   if(kind.value==="video"){body.duration=+$("dur").value;delete body.width;delete body.height}
+   const j=await (await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})).json();
+   if(j.url){showResult(j.url,kind.value==="video")}
+   else o.textContent="שגיאה: "+(j.error||JSON.stringify(j));
+  }
+ }catch(e){o.textContent="שגיאה: "+e}b.disabled=false};
+
+/* ---- history ---- */
+async function loadHist(){const h=$("hist");h.textContent="נטענת…";
+ try{
+ var ctl=new AbortController();var t=setTimeout(function(){ctl.abort()},45000);
+ const r=await fetch(PROXY,{method:"POST",signal:ctl.signal,headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"history",limit:30})});
+ clearTimeout(t);
+ const txt=await r.text();let j;try{j=JSON.parse(txt)}catch(pe){window.__d("hist non-JSON "+r.status+": "+txt.slice(0,120));h.innerHTML='<span class="note">שגיאת שרת '+r.status+'</span>';return}
+ if(!j.items||!j.items.length){h.innerHTML='<span class="note">עוד אין תוצאות</span>';return}
+ h.innerHTML="";
+ j.items.forEach(it=>{const d=document.createElement("div");d.className="it";d.title=(it.prompt||"").slice(0,120);
+  d.innerHTML=(it.kind==="video"?`<div class="v">▶</div>`:`<img loading="lazy" src="${it.url}" alt="">`)+`<div class="cap">${(it.prompt||"").slice(0,34)}</div>`;
+  d.onclick=()=>openLb(it);h.appendChild(d)});
+ }catch(e){window.__d("hist fail: "+(e&&e.name)+" "+(e&&e.message));h.innerHTML='<span class="note">טעינת היסטוריה נכשלה: '+(e&&e.name)+'</span>'}}
+function openLb(it){const lb=$("lb"),bd=$("lbbody");
+ bd.innerHTML=it.kind==="video"
+  ?`<video src="${it.url}" controls autoplay loop></video>`
+  :`<img src="${it.url}">`;
+ lb.style.display="flex"}
+$("hRefresh").onclick=loadHist;
+loadHist();
+
+
+/* ---- GPU notebooks launcher ---- */
+$("openBoth").onclick=async()=>{
+ if(!$("gpuPrompt").value.trim())$("gpuPrompt").value=compose();
+ const p=$("gpuPrompt").value.trim();
+ try{ if(p) await navigator.clipboard.writeText(p); $("gpuMsg").textContent=p?"הפרומפט הועתק ללוח. מדביקים בתא 2 בקולאב / בקרנל בקגל.":"נפתחו שתי המחברות."}catch(e){$("gpuMsg").textContent="נפתחו. העתק את הפרומפט ידנית."}
+ window.open($("openColab").href,"_blank","noopener");
+ window.open($("openKaggle").href,"_blank","noopener");
+};
+
+/* ---- lightbox ---- */
+document.addEventListener("click",e=>{const t=e.target;
+ if(t.tagName==="IMG"&&t.classList.contains("zoom")){$("lbbody").innerHTML=`<img src="${t.src}">`;$("lb").style.display="flex"}});
+fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"status"})})
+ .then(r=>r.json()).then(j=>{$("bal").textContent="יתרה: "+(j.balance??"—");$("auth").textContent=j.authenticated?"מחובר אוטומטית (sunraz2)":"בלי מפתח"}).catch(e=>{$("bal").textContent="יתרה: שגיאת חיבור";window.__d("status fail: "+e)});
+
+/* ---- GPU one-click (Kaggle via backend queue) ---- */
+var GPUQ="https://base44.app/api/apps/6a901f55a4d9a9b76a095a77/functions/gpuQueue";
+var gpuTimer=null,gpuId=null;
+function gpuCall(b){return fetch(GPUQ,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){return r.json().then(function(j){j._http=r.status;return j})})}
+var STAGES={queued:[8,"בתור, ממתין לשימי פיתוח"],launching:[20,"מעלה קרנל לקגל"],running:[55,"GPU רץ ביצירת הוידאו (כ-17 דקות)"],complete:[100,"הסתיים"],failed:[100,"נכשל"]};
+function gpuRender(j){
+ var st=STAGES[j.status]||[5,j.status];
+ $("gpuBox").style.display="block";
+ $("gpuStat").textContent=st[1]+(j.kaggle_status?"  ("+j.kaggle_status+")":"");
+ $("gpuBar").style.width=st[0]+"%";
+ $("gpuBar").style.background=j.status==="failed"?"#c0392b":(j.status==="complete"?"#2e9e5b":"#7c5cff");
+ $("gpuLog").textContent=(j.log||"")+(j.error?"\nשגיאה: "+j.error:"");
+ if(j.status==="complete"&&j.output_url){$("gpuRes").innerHTML='<video src="'+j.output_url+'" controls playsinline style="width:100%;max-width:360px;margin-top:8px;border-radius:10px"></video><div><a class="act" href="'+j.output_url+'" target="_blank" rel="noopener">פתח בגודל מלא</a><a class="act" href="'+j.output_url+'" download>שמור</a></div>'}
+}
+function gpuPoll(){
+ if(!gpuId)return;
+ gpuCall({action:"state",id:gpuId}).then(function(j){
+  if(j.error&&!j.status){$("gpuLog").textContent="שגיאת סטטוס: "+j.error;return}
+  gpuRender(j);
+  if(j.status==="complete"||j.status==="failed"){clearInterval(gpuTimer);gpuTimer=null;$("gpuGo").disabled=false;try{localStorage.removeItem("gpuId")}catch(e){}}
+ }).catch(function(e){window.__d&&window.__d("gpu poll: "+e)})
+}
+function gpuWatch(id){gpuId=id;try{localStorage.setItem("gpuId",id)}catch(e){};$("gpuGo").disabled=true;if(gpuTimer)clearInterval(gpuTimer);gpuPoll();gpuTimer=setInterval(gpuPoll,8000)}
+$("gpuGo").onclick=function(){
+ var p=compose();
+ if(p.length<10){$("gpuBox").style.display="block";$("gpuStat").textContent="כתוב קודם פעולה או סצנה";return}
+ $("gpuGo").disabled=true;$("gpuBox").style.display="block";$("gpuRes").innerHTML="";$("gpuStat").textContent="שולח בקשה…";$("gpuBar").style.width="4%";
+ gpuCall({action:"launch",prompt:p,action_text:$("action").value.trim(),seed:+$("seed").value,image:$("ref").value.trim()||undefined}).then(function(j){
+  if(j._http===409&&j.active_id){$("gpuLog").textContent="כבר רצה עבודה, עוקב אחריה.";gpuWatch(j.active_id);return}
+  if(!j.id){$("gpuStat").textContent="שגיאה: "+(j.error||"לא ידוע");$("gpuGo").disabled=false;return}
+  gpuWatch(j.id);
+ }).catch(function(e){$("gpuStat").textContent="שגיאת חיבור: "+e;$("gpuGo").disabled=false});
+};
+try{var saved=localStorage.getItem("gpuId");if(saved)gpuWatch(saved)}catch(e){}
+
+/* === שמירת סקציות פרומפט (12/10) === */
+var SAVE_IDS=["lock","action","prompt","set","gpuPrompt"];
+function saveField(id,quiet){try{localStorage.setItem("polliSave_"+id,$(id).value);
+ if(!quiet){var b=document.querySelector('.saveBtn[data-f="'+id+'"]');if(b){var t=b.textContent;b.textContent="נשמר ✓";setTimeout(function(){b.textContent=t},1200)}}}catch(e){}}
+SAVE_IDS.forEach(function(id){var el=$(id);if(!el)return;
+ try{var sv=localStorage.getItem("polliSave_"+id);if(sv!==null&&sv!=="")el.value=sv;}catch(e){}
+ var tm=null;el.addEventListener("input",function(){clearTimeout(tm);tm=setTimeout(function(){saveField(id,true)},800);});});
+document.querySelectorAll(".saveBtn").forEach(function(b){b.addEventListener("click",function(){saveField(b.getAttribute("data-f"))});});
+try{$("full").textContent="פרומפט מלא: "+compose()}catch(e){}
+
+
+
+/* === מצב אורח (12/10) === */
+$("guestBtn").addEventListener("click",function(){
+  var btn=$("guestBtn"),st=$("guestStat");
+  btn.disabled=true;btn.textContent="מחדש…";st.textContent="אורח: בודק…";
+  fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"guest_renew"})})
+  .then(function(r){return r.json()}).then(function(j){
+    btn.disabled=false;btn.textContent="🔄 חידוש התארחות";
+    if(j.guest){st.textContent="אורח: פעיל ✓";st.style.color="#7fd492"}
+    else{st.textContent="אורח: מוגבל, המתן כדקה";st.style.color="#ffb347"}
+  }).catch(function(e){btn.disabled=false;btn.textContent="🔄 חידוש התארחות";st.textContent="אורח: שגיאת חיבור";st.style.color="#ff8a8a"});
+});
+
+</script></body></html>
