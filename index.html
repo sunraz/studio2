@@ -74,6 +74,7 @@ window.addEventListener("unhandledrejection",function(e){window.__d("PROMISE ERR
 <div class="card"><h2>יצירה</h2>
 <div class="row">
 <div><label>סוג</label><select id="kind"><option value="image">תמונה (עובד, חינם)</option><option value="video">וידאו (דורש יתרה בתשלום)</option></select></div>
+<div><label>מנוע תמונה</label><select id="engine"><option value="pollinations">פולינציונז חינם (ברירת מחדל)</option><option value="google">גוגל Nano Banana 2.1 (בייס44, קרדיטים)</option><option value="flux3">FLUX 3 (בייס44, קרדיטים)</option><option value="muse">Muse מטא (לא זמין בפלטפורמה)</option></select><div class="note" style="margin-top:4px">מנועי בייס44 עובדים דרך AI Gateway וחייבים בקרדיטים (FLUX 3: 20 לתמונה). Muse לא קיים ברשימת המודלים.</div></div>
 <div><label>מודל</label><select id="model"><option value="flux">Flux Schnell (מהיר, ברירת מחדל)</option><option value="zimage">Z-Image Turbo (מהיר וזול)</option><option value="klein">Flux Klein 4B</option><option value="kontext">Flux Kontext (עריכה עם רפרנס)</option><option value="dreamshaper">DreamShaper 8</option><option value="gptimage">GPT Image Mini</option><option value="gpt-image-1.5">GPT Image 1.5</option><option value="microsoft/mai-image-2.6-flash">MAI Image Flash</option><option value="community/MarcosFRG/sdxl-lightning">SDXL Lightning</option><option value="community/vendouple/lucid-origin">Lucid Origin</option></select><div class="note" style="margin-top:4px">בתמונות (מצב אורח, חינם) המודל הוא Sana — הבחירה כאן משפיעה רק על וידאו.</div></div>
 <div><label>רוחב</label><input id="w" value="832"></div>
 <div><label>גובה</label><input id="h" value="480"></div>
@@ -202,6 +203,17 @@ async function persistGuest(blobUrl,prompt,w,hh,seed){
 }
 $("go").onclick=async()=>{const b=$("go");b.disabled=true;const o=$("out");const P=compose();
  try{
+  if(kind.value==="image"&&!$("ref").value.trim()&&["google","flux3","muse"].includes($("engine").value)){
+   // מנועי בייס44 — דרך studioImageGen (AI Gateway)
+   const eng=$("engine").value;
+   if(eng==="muse"){o.textContent="Muse (מטא) אינו קיים ברשימת המודלים של AI Gateway של בייס44. מנועים זמינים: גוגל, FLUX 3.";b.disabled=false;return}
+   o.textContent="יוצר דרך בייס44 AI Gateway ("+(eng==="flux3"?"FLUX 3":"גוגל Nano Banana")+")… יכול לקחת עד דקה";
+   try{
+    const j=await (await fetch("https://base44.app/api/apps/6a901f55a4d9a9b76a095a77/functions/studioImageGen",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({engine:eng,prompt:P,aspect_ratio:(+$("w").value>+$("h").value)?"3:2":"2:3"})})).json();
+    if(j.ok&&j.url){showResult(j.url,false);try{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_result",user:USER.display_name,kind:"image",url:j.url,prompt:P,parameters:{tier:"engine",model:j.model,ms:j.ms}})})}catch(e2){}b.disabled=false;return}
+    o.textContent="שגיאה: "+(j.error||"gateway_error")+(j.status?(" (HTTP "+j.status+")"):"")+(j.detail&&j.detail.error&&j.detail.error.message?(" — "+j.detail.error.message):"");
+   }catch(e){o.textContent="שגיאה: "+e}
+   b.disabled=false;return}
   if(kind.value==="image"&&!$("ref").value.trim()){
    // מסלול אורח חינם ישירות מהדפדפן (חלון האורח של המכשיר שלך)
    o.textContent="יוצר כאורח (חינם)…";
