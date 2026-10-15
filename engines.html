@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>בורר מנועים | ShimiStudio</title>
+<title>בורר מנועי תמונה | ShimiStudio</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
   body { background: linear-gradient(145deg, #101a2e 0%, #1c2740 55%, #2a1f14 100%); color: #eee; min-height: 100vh; padding: 24px; }
@@ -12,28 +12,23 @@
   .sub { color: #9db1cc; font-size: 14px; margin-bottom: 18px; }
   a.nav { color:#f5c86b; font-size:13px; text-decoration:none; display:inline-block; margin-bottom:14px; }
   .card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
-  h2 { font-size: 17px; color: #f5c86b; margin-bottom: 10px; }
-  textarea, input[type=text] { width: 100%; min-height: 80px; border-radius: 10px; border: 1px solid #3a4a68; background: #0c1524; color: #eee; padding: 12px; font-size: 15px; resize: vertical; }
+  textarea { width: 100%; min-height: 90px; border-radius: 10px; border: 1px solid #3a4a68; background: #0c1524; color: #eee; padding: 12px; font-size: 15px; resize: vertical; }
   .engines { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 12px 0; }
   .eng { border: 2px solid #3a4a68; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: .18s; background: #0c1524; position: relative; }
   .eng:hover { border-color: #f5c86b; }
   .eng.sel { border-color: #f5c86b; background: rgba(245,200,107,.12); box-shadow: 0 0 14px rgba(245,200,107,.25); }
-  .eng.dis { opacity: .5; cursor: not-allowed; }
   .eng b { display: block; font-size: 15px; margin-bottom: 3px; }
   .eng span { font-size: 12px; color: #9db1cc; }
   .tag { position: absolute; top: -8px; right: 8px; background: #2e9e5b; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 8px; }
-  .tag.off { background: #b3542e; }
   .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
-  select, button.go { background: #0c1524; color: #eee; border: 1px solid #3a4a68; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+  select { background: #0c1524; color: #eee; border: 1px solid #3a4a68; border-radius: 8px; padding: 8px 10px; font-size: 14px; }
   button.go { margin-top: 12px; width: 100%; padding: 14px; font-size: 17px; font-weight: 700; border: none; border-radius: 12px; cursor: pointer; background: linear-gradient(90deg, #f5c86b, #e89b2f); color: #1c1607; }
   button.go:disabled { opacity: .45; cursor: wait; }
-  #status, .st { margin-top: 10px; font-size: 14px; color: #9db1cc; }
+  #status { margin-top: 10px; font-size: 14px; color: #9db1cc; }
   .err { color: #ff8a8a; white-space: pre-wrap; }
   #result { margin-top: 14px; text-align: center; }
   #result img { max-width: 100%; border-radius: 12px; box-shadow: 0 4px 30px rgba(0,0,0,.5); }
   .meta { font-size: 13px; color: #9db1cc; margin-top: 8px; }
-  .out { background: #0c1524; border: 1px solid #3a4a68; border-radius: 10px; padding: 12px; margin-top: 10px; white-space: pre-wrap; font-size: 14px; min-height: 40px; }
-  audio { width: 100%; margin-top: 10px; }
   .note { font-size: 12px; color: #8899b3; margin-top: 8px; line-height: 1.5; }
   details { margin-top: 10px; font-size: 12px; color: #8899b3; }
   pre { white-space: pre-wrap; direction: ltr; text-align: left; background:#0c1524; padding:8px; border-radius:8px; margin-top:6px; max-height: 200px; overflow:auto; }
@@ -42,148 +37,83 @@
 <body>
 <div class="wrap">
   <a class="nav" href="/">← חזרה לסטודיו הראשי</a>
-  <h1>🎬 בורר מנועים — ShimiStudio</h1>
-  <div class="sub">כל מנועי הרשת במקום אחד: תמונות, טקסט, קול ותמלול</div>
+  <h1>🎬 בורר מנועי תמונה — ShimiStudio</h1>
+  <div class="sub">פרומפט אחד, חמישה מנועי תמונה</div>
 
   <div class="card">
-    <h2>🖼️ מנועי תמונה</h2>
-    <textarea id="iprompt" placeholder="תאר את התמונה שאתה רוצה...">A tiny red robot holding a sign that says SHIMI, studio lighting, white background</textarea>
-    <div class="engines" id="iengines"></div>
+    <textarea id="prompt" placeholder="תאר את התמונה שאתה רוצה...">A tiny red robot holding a sign that says SHIMI, studio lighting, white background</textarea>
+    <div class="engines" id="engines"></div>
     <div class="row">
-      <label>יחס: <select id="iratio"><option>1:1</option><option>16:9</option><option>9:16</option><option>4:3</option><option>3:4</option><option>21:9</option></select></label>
-      <label>רזולוציה: <select id="ires"></select></label>
+      <label>יחס: <select id="ratio"><option>1:1</option><option>16:9</option><option>9:16</option><option>4:3</option><option>3:4</option><option>21:9</option></select></label>
+      <label>רזולוציה: <select id="res"></select></label>
     </div>
-    <button class="go" id="igo" onclick="genImage()">⚡ צור תמונה</button>
-    <div class="st" id="istatus"></div>
-    <div id="iresult"></div>
-    <div class="note" id="inote">FLUX 3 · Nano Banana 2.1 · Vertex (Gemini) · Muse רצים דרך שער ה-AI של Base44 (אטלס). Pollinations עצמאי ורץ תמיד — בלי תלות במכסות. אין במפתח Groq מנועי תמונה או וידאו כלל.</div>
-    <details><summary>תשובת ה-API (לדיבוג)</summary><pre id="iraw"></pre></details>
+    <button class="go" id="go" onclick="generate()">⚡ צור תמונה</button>
+    <div id="status"></div>
+    <div id="result"></div>
+    <div class="note">Pollinations — עצמאי ותמיד זמין. FLUX 3 · Nano Banana 2.1 · Vertex (Gemini) · Muse רצים דרך שער ה-AI של Base44 (אטלס) ותלויים בקרדיטים/זמינות הפלטפורמה. וידאו: אין מנוע וידאו במפתחות האלה — הוידאו נשאר בזרימת ה-GPU בסטודיו הראשי.</div>
+    <details><summary>תשובת ה-API (לדיבוג)</summary><pre id="raw"></pre></details>
   </div>
-
-  <div class="card">
-    <h2>📝 מנועי טקסט (Groq)</h2>
-    <div class="engines" id="tengines"></div>
-    <textarea id="tprompt" placeholder="בקשה מהמנוע...">כתוב רעיון לפרומפט תמונה של גיבורת סייברפאנק חזקה</textarea>
-    <button class="go" onclick="genText()">✍️ הפק טקסט</button>
-    <div class="st" id="tstatus"></div>
-    <div class="out" id="tout"></div>
-  </div>
-
-  <div class="card">
-    <h2>🎙️ תמלול קול → טקסט (Whisper, תומך עברית)</h2>
-    <div class="row"><input type="file" id="afile" accept="audio/*" style="color:#9db1cc"></div>
-    <button class="go" onclick="transcribe()">🎧 תמלל</button>
-    <div class="st" id="astatus"></div>
-    <div class="out" id="aout"></div>
-  </div>
-
-  <div class="card">
-    <h2>🔊 הפקת קול (Orpheus TTS)</h2>
-    <div class="engines">
-      <div class="eng dis"><b>Orpheus EN</b><span>canopylabs/orpheus-v1-english</span><div class="tag off">מושהה</div></div>
-      <div class="eng dis"><b>Orpheus AR</b><span>canopylabs/orpheus-arabic-saudi</span><div class="tag off">מושהה</div></div>
-    </div>
-    <div class="note">מנועי הקול של Groq דורשים אישור תנאי שימוש חד-פעמי בקונסולה של Groq (אין עברית בהם, רק אנגלית/ערבית). ברגע שהתנאים יאושרו — הם יידלקו כאן אוטומטית.</div>
-  </div>
-
-  <div class="note">מפתח Groq של הרשת: טקסט ותמלול פעילים. מנועי התמונה והווידאו לא קיימים ב-Groq — הם רצים דרך אטלס/Pollinations.</div>
 </div>
 
 <script>
 const ATLAS = "https://atlas-8b8d53e2.base44.app/functions/shimiEnginePicker";
 const AKEY = "shimi-studio-demo-8f3b2a91";
-const GROQ = "https://solas-6a095a77.base44.app/functions/groqStudio";
-const IMG = {
+const ENG = {
   poll:  { label: "Pollinations", sub: "עצמאי — תמיד זמין", res: ["1024"] },
   flux:  { label: "FLUX 3", sub: "Black Forest Labs", res: ["1K","1.5K","2K","4K"] },
   nano:  { label: "Nano Banana 2.1", sub: "Google", res: ["1K"] },
   vertex: { label: "Vertex (Gemini)", sub: "Gemini 3.1 Flash Image", res: ["1K","2K","4K"] },
   muse:  { label: "Muse", sub: "Meta — 2K בלבד", res: ["2K"] },
 };
-const TXT = {
-  "openai/gpt-oss-120b": { label: "GPT-OSS 120B", sub: "החזק — OpenAI" },
-  "openai/gpt-oss-20b": { label: "GPT-OSS 20B", sub: "מהיר — OpenAI" },
-  "qwen/qwen3.8-27b": { label: "Qwen 3.8", sub: "27B — Alibaba" },
-};
-let isel = "poll", tsel = "openai/gpt-oss-20b";
+let sel = "poll";
 
-function build(id, defs, sel, disabledIds=[]) {
-  const wrap = document.getElementById(id);
-  for (const [k, e] of Object.entries(defs)) {
-    const d = document.createElement("div");
-    const dis = disabledIds.includes(k);
-    d.className = "eng" + (k === sel ? " sel" : "") + (dis ? " dis" : "");
-    d.innerHTML = `<b>${e.label}</b><span>${e.sub}</span>` + (k === "poll" ? '<div class="tag">עצמאי</div>' : "");
-    if (!dis) d.onclick = () => { sel = k; document.querySelectorAll("#"+id+" .eng").forEach(x => x.classList.remove("sel")); d.classList.add("sel"); fillRes(); };
-    d.dataset.k = k; wrap.appendChild(d);
-  }
-  window[id+"Sel"] = () => document.querySelector("#"+id+" .eng.sel")?.dataset.k || sel;
+const wrap = document.getElementById("engines");
+for (const [id, e] of Object.entries(ENG)) {
+  const d = document.createElement("div");
+  d.className = "eng" + (id === sel ? " sel" : "");
+  d.innerHTML = `<b>${e.label}</b><span>${e.sub}</span>` + (id === "poll" ? '<div class="tag">עצמאי</div>' : "");
+  d.onclick = () => { sel = id; document.querySelectorAll(".eng").forEach(x => x.classList.remove("sel")); d.classList.add("sel"); fillRes(); };
+  d.dataset.k = id;
+  wrap.appendChild(d);
 }
 function fillRes() {
-  const k = ienginesSel(); const s = document.getElementById("ires");
-  s.innerHTML = IMG[k].res.map(r => `<option>${r}</option>`).join("");
+  const s = document.getElementById("res");
+  s.innerHTML = ENG[sel].res.map(r => `<option>${r}</option>`).join("");
 }
-build("iengines", IMG, isel); fillRes();
-build("tengines", TXT, tsel);
+fillRes();
 
-async function genImage() {
-  const prompt = document.getElementById("iprompt").value.trim();
-  const st = document.getElementById("istatus");
-  if (!prompt) { st.innerHTML = '<span class="err">צריך פרומפט</span>'; return; }
-  const eng = ienginesSel();
-  document.getElementById("igo").disabled = true;
-  st.textContent = "יוצר...";
-  document.getElementById("iresult").innerHTML = "";
+async function generate() {
+  const prompt = document.getElementById("prompt").value.trim();
+  const status = document.getElementById("status");
+  const result = document.getElementById("result");
+  if (!prompt) { status.innerHTML = '<span class="err">צריך פרומפט</span>'; return; }
+  document.getElementById("go").disabled = true;
+  status.textContent = "יוצר... זה יכול לקחת עד חצי דקה.";
+  result.innerHTML = "";
+  document.getElementById("raw").textContent = "";
   try {
-    if (eng === "poll") {
-      const r = document.getElementById("iratio").value.replace(":", "x");
+    if (sel === "poll") {
       const url = "https://image.pollinations.ai/prompt/" + encodeURIComponent(prompt) + "?width=1024&height=1024&nologo=true&seed=" + Math.floor(Math.random()*1e9);
-      document.getElementById("iresult").innerHTML = `<img src="${url}" alt="result"><div class="meta">Pollinations · עצמאי · 1024x1024</div>`;
-      st.textContent = "הושלם (עצמאי).";
+      result.innerHTML = `<img src="${url}" alt="result"><div class="meta">Pollinations · עצמאי · 1024x1024</div>`;
+      status.textContent = "הושלם (עצמאי).";
     } else {
-      const res = await fetch(ATLAS, { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, engine: eng, aspect_ratio: document.getElementById("iratio").value, resolution: document.getElementById("ires").value, key: AKEY }) });
-      const j = await res.json();
-      document.getElementById("iraw").textContent = JSON.stringify(j, null, 2);
+      const r = await fetch(ATLAS, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, engine: sel, aspect_ratio: document.getElementById("ratio").value, resolution: document.getElementById("res").value, key: AKEY })
+      });
+      const j = await r.json();
+      document.getElementById("raw").textContent = JSON.stringify(j, null, 2);
       if (j.ok && j.url) {
-        document.getElementById("iresult").innerHTML = `<img src="${j.url}" alt="result"><div class="meta">${j.label} · ${j.model} · ${(j.ms/1000).toFixed(1)} שניות</div>`;
-        st.textContent = "הושלם.";
+        result.innerHTML = `<img src="${j.url}" alt="result"><div class="meta">${j.label} · ${j.model} · ${(j.ms/1000).toFixed(1)} שניות</div>`;
+        status.textContent = "הושלם.";
       } else {
         const msg = (j.error && j.error.message) ? j.error.message : (j.error || "שגיאה לא ידועה");
-        st.innerHTML = `<span class="err">שגיאה: ${msg}</span><br><span class="note">אם זו שגיאת מכסה (402) — עבור זמנית למנוע Pollinations העצמאי, שתמיד זמין.</span>`;
+        status.innerHTML = `<span class="err">שגיאה: ${msg}</span><br><span class="note">אם זו שגיאת מכסה (402) — עבור למנוע Pollinations העצמאי שתמיד זמין.</span>`;
       }
     }
-  } catch (e) { st.innerHTML = `<span class="err">שגיאת רשת: ${e}</span>`; }
-  document.getElementById("igo").disabled = false;
-}
-
-async function genText() {
-  const prompt = document.getElementById("tprompt").value.trim();
-  const st = document.getElementById("tstatus");
-  if (!prompt) { st.innerHTML = '<span class="err">צריך בקשה</span>'; return; }
-  st.textContent = "מפיק...";
-  try {
-    const res = await fetch(GROQ, { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ kind: "text", prompt, model: tenginesSel() }) });
-    const j = await res.json();
-    if (j.ok) { document.getElementById("tout").textContent = j.text; st.textContent = `הושלם · ${j.model} · ${(j.ms/1000).toFixed(2)} שניות`; }
-    else st.innerHTML = `<span class="err">${j.error}</span>`;
-  } catch (e) { st.innerHTML = `<span class="err">שגיאת רשת: ${e}</span>`; }
-}
-
-async function transcribe() {
-  const f = document.getElementById("afile").files[0];
-  const st = document.getElementById("astatus");
-  if (!f) { st.innerHTML = '<span class="err">בחר קובץ קול</span>'; return; }
-  st.textContent = "מתמלל...";
-  try {
-    const b64 = await new Promise((ok, err) => { const r = new FileReader(); r.onload = () => ok(btoa(String.fromCharCode(...new Uint8Array(r.result)))); r.onerror = err; r.readAsArrayBuffer(f); });
-    const res = await fetch(GROQ, { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ kind: "stt", audio_b64: b64, lang: "he" }) });
-    const j = await res.json();
-    if (j.ok) { document.getElementById("aout").textContent = j.text || "(שקט)"; st.textContent = `הושלם · ${j.model} · ${(j.ms/1000).toFixed(2)} שניות`; }
-    else st.innerHTML = `<span class="err">${j.error}</span>`;
-  } catch (e) { st.innerHTML = `<span class="err">שגיאה: ${e}</span>`; }
+  } catch (e) { status.innerHTML = `<span class="err">שגיאת רשת: ${e}</span>`; }
+  document.getElementById("go").disabled = false;
 }
 </script>
 </body>
