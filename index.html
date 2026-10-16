@@ -385,4 +385,88 @@ document.addEventListener("click",function(ev){if(!ev.target.closest||!ev.target
       m.appendChild(d)});
   }).catch(function(e){$("userBtn").textContent="👤 "+USER.display_name});
 })();
-</script></body></html>
+</script>
+<!-- ═══════════ תוספות 16/10 (שימי פיתוח) — הכל נוסף, שום דבר לא נמחק ═══════════ -->
+<div id="relay-section" style="background:#111827;border:1px solid #4f46e5;border-radius:12px;padding:20px;margin:22px 0;font-family:sans-serif;direction:rtl;text-align:right;color:#e5e7eb">
+  <h3 style="margin:0 0 6px;color:#a5b4fc">🛰️ מנועי בייס44 דרך ריליי הרשת שלנו</h3>
+  <p style="margin:0 0 12px;font-size:0.9em;color:#9ca3af">הפקה דרך ערוץ הסוכן שלנו בלי קרדיטי אינטגרציה. הבקשה נכנסת לתור RenderJob, שימי פיתוח מעבד והתמונה חוזרת לכאן. סטטוס חי מוצג מתחת.</p>
+  <textarea id="relay-prompt" placeholder="פרומפט למנוע בייס..." style="width:100%;min-height:70px;background:#1f2937;color:#fff;border:1px solid #4f46e5;border-radius:8px;padding:10px;margin-bottom:8px"></textarea>
+  <button id="relay-go" onclick="relayRender()" style="background:#4f46e5;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-weight:bold;cursor:pointer">שגר דרך הריליי 🚀</button>
+  <div id="relay-status" style="margin-top:10px;font-size:0.9em;color:#9ca3af">מוכן.</div>
+  <div id="relay-result" style="margin-top:10px"></div>
+</div>
+
+<div id="history-section" style="display:none;background:#111827;border:1px solid #f59e0b;border-radius:12px;padding:20px;margin:22px 0;font-family:sans-serif;direction:rtl;text-align:right;color:#e5e7eb">
+  <h3 style="margin:0 0 6px;color:#fcd34d">📚 היסטוריה מלאה — כל המנועים</h3>
+  <p style="margin:0 0 12px;font-size:0.9em;color:#9ca3af">כל התמונות, הווידאוים והניסיונות שהופקו אי פעם בכל מנוע שהוא (חוץ מההיסטוריה הפנימית של סטודיו1): גלריית הרשת המלאה, ארכיוני הקליברציות וכל סבבי המנועים.</p>
+  <div style="margin-bottom:10px">
+    <a href="https://aidoor.shimi.land/gallery.html" target="_blank" style="color:#fcd34d">פתח גלריה מלאה בחלון חדש ↗</a>
+  </div>
+  <div style="font-size:0.88em;line-height:2">
+    <b style="color:#a5b4fc">לפי מנוע/סבב:</b><br>
+    • <a href="https://aidoor.shimi.land/gallery/lea-lora/" target="_blank" style="color:#93c5fd">לורה של לאה מ-Hugging Face (6 תמונות, קולאב T4)</a><br>
+    • <a href="https://aidoor.shimi.land/gallery/lea-test/" target="_blank" style="color:#93c5fd">לאה — סבבי 3 מושלמים (זרעים 151001-151011)</a><br>
+    • <a href="https://aidoor.shimi.land/gallery/lea-pollinations/" target="_blank" style="color:#93c5fd">לאה — פוליניישנז</a><br>
+    • <a href="https://aidoor.shimi.land/gallery/lea-canonical/" target="_blank" style="color:#93c5fd">לאה — קנונים נעולים (גוף/חזה)</a><br>
+    • <a href="https://aidoor.shimi.land/gallery/allfours-realvisxl/" target="_blank" style="color:#93c5fd">RealVisXL מקומי (מכונת סאן)</a> | <a href="https://aidoor.shimi.land/gallery/allfours-flux/" target="_blank" style="color:#93c5fd">FLUX (ארכיון)</a><br>
+    • <a href="https://aidoor.shimi.land/gallery/calib/" target="_blank" style="color:#93c5fd">קליברציות דמויות</a> | <a href="https://aidoor.shimi.land/gallery/test-clothes/" target="_blank" style="color:#93c5fd">בגדי טסט</a> | <a href="https://aidoor.shimi.land/gallery/physics/" target="_blank" style="color:#93c5fd">מבחני פיזיקה</a><br>
+    • <a href="https://aidoor.shimi.land/gallery/tests-archive/" target="_blank" style="color:#93c5fd">ארכיון ניסיונות</a> | <a href="https://aidoor.shimi.land/gallery/carmel/" target="_blank" style="color:#93c5fd">כרמל</a> | <a href="https://aidoor.shimi.land/gallery/lola/" target="_blank" style="color:#93c5fd">לולה (Sana/FLUX)</a> | <a href="https://aidoor.shimi.land/gallery/misc/" target="_blank" style="color:#93c5fd">שונות</a>
+  </div>
+  <iframe src="https://aidoor.shimi.land/gallery.html" style="width:100%;height:520px;border:1px solid #374151;border-radius:10px;margin-top:12px" title="גלריה מלאה"></iframe>
+</div>
+
+<div id="updates-section" style="background:#111827;border:1px solid #10b981;border-radius:12px;padding:20px;margin:22px 0;font-family:sans-serif;direction:rtl;text-align:right;color:#e5e7eb">
+  <h3 style="margin:0 0 6px;color:#6ee7b7">🆕 התפתחויות ועדכונים (16/10)</h3>
+  <ul style="margin:6px 0 0;font-size:0.9em;color:#d1d5db;line-height:1.9">
+    <li>דף זה מסומן כגרסה קודמת (פוליניישנז) — נשמר לתיעוד, הסטודיו הנוכחי: studio.shimi.land</li>
+    <li>ShimiWorker v1.2.1 בשתי המכונות: דופק, שומר-חיים, עדכון עצמי, טוקן גישה קבוע (PAT) ללא תפוגה — בלי רוטציה</li>
+    <li>מנוע RealVisXL V5.0 מקומי (ShimiStudioLocal v1.2) = מנוע ראשי, בלי קרדיטי אינטגרציה</li>
+    <li>נבנה ריליי "מנועי בייס44" (למעלה): הצינור עובד, קריאת המנוע כרגע חסומה עד איפוס/שדרוג קרדיטי אינטגרציה — מצב חי מוצג בריליי</li>
+    <li>אפשרויות הקרדיטים הישנות בבורר למטה לא נמחקו — הן מדורגות ואינן בשימוש</li>
+  </ul>
+</div>
+
+<button onclick="var h=document.getElementById('history-section');h.style.display=h.style.display==='none'?'block':'none'" style="background:#f59e0b;color:#111827;border:none;border-radius:10px;padding:12px 24px;font-weight:bold;cursor:pointer;font-family:sans-serif">📚 הצגת היסטוריה מלאה</button>
+
+<script>
+const S2R_SECRET = "s2r-f2b7768d0cd0da551477343483596a4b";
+const RELAY_URL = "https://solas-6a095a77.base44.app/functions/studioRelayRender";
+const RELAY_STATUS_URL = "https://solas-6a095a77.base44.app/functions/studioRelayStatus";
+async function relayRender() {
+  const prompt = document.getElementById("relay-prompt").value.trim();
+  const st = document.getElementById("relay-status");
+  const res = document.getElementById("relay-result");
+  if (!prompt) { st.textContent = "קודם פרומפט 🙂"; return; }
+  st.textContent = "שולח לריליי...";
+  try {
+    const r = await fetch(RELAY_URL, {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({prompt: prompt, secret: S2R_SECRET, width:1024, height:1024})});
+    const d = await r.json();
+    if (!d.ok) { st.textContent = "שגיאת ריליי: " + (d.error||r.status); return; }
+    st.textContent = "בתור (משימה " + d.job_id.slice(-6) + ") — שימי פיתוח מעבד...";
+    pollRelay(d.job_id, st, res);
+  } catch (e) { st.textContent = "שגיאת רשת: " + e; }
+}
+async function pollRelay(id, st, res) {
+  for (let i = 0; i < 60; i++) {
+    await new Promise(r => setTimeout(r, 5000));
+    try {
+      const r = await fetch(RELAY_STATUS_URL + "?id=" + id);
+      const d = await r.json();
+      if (d.status === "done" && d.output_url) {
+        st.textContent = "מוכן ✓";
+        res.innerHTML = '<img src="' + d.output_url + '" style="max-width:100%;border-radius:10px">';
+        return;
+      }
+      if (d.status === "failed") {
+        st.textContent = "נכשל: " + (d.error_message || "לא ידוע");
+        return;
+      }
+      st.textContent = "מעבד... (" + (i+1)*5 + " שניות, סטטוס: " + d.status + ")";
+    } catch (e) { st.textContent = "בדיקת סטטוס נכשלה, מנסה להמשיך: " + e; }
+  }
+  st.textContent = "לא הושלם ב-5 דקות — המשימה נשמרת ב-RenderJob ואפשר לבדוק אחר כך.";
+}
+</script>
+
+</body></html>
